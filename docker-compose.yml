@@ -1,0 +1,33 @@
+networks:
+  nw: ~
+
+services:
+  app:
+    container_name: rsyslog-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev
+    volumes:
+      - ./:/var/www
+      - ./docker/fpm-docker.conf:/usr/local/etc/php-fpm.d/fpm-docker.conf
+    networks:
+      - nw
+
+  nginx:
+    container_name: rsyslog-nginx
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: nginx
+    ports:
+      - "80:80"
+#      - "443:443"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx-default.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - nw
+    depends_on:
+      app:
+        condition: service_started

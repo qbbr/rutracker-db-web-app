@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="robots" content="noindex,nofollow">
+    <meta name="author" content="qbbr">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>rutracker-local</title>
+    <link href="/frontend/vendor/hack.min.css" rel="stylesheet">
+    <link href="/frontend/vendor/bootstrap.min.css" rel="stylesheet">
+    <link href="/frontend/vendor/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="/frontend/main.css" rel="stylesheet">
+</head>
+<body>
+    <div id="app"></div>
+
+    <!-- Error modal -->
+    <div class="modal fade" id="errorModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title text-danger fs-5" id="errorModalTitle"></h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body font-monospace" id="errorModalBody"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/frontend/vendor/bootstrap.bundle.min.js"></script>
+    <script src="/frontend/vendor/vue.global.min.js"></script>
+    <script src="/frontend/vendor/vue-router.global.min.js"></script>
+    <script src="/frontend/vendor/vue-axios.common.min.js"></script>
+    <script src="/frontend/vendor/axios.min.js"></script>
+    <script src="/frontend/vendor/mitt.umd.js"></script>
+    <script type="module" src="/frontend/main.js"></script>
+    <script src="/frontend/bs-color-toggler.js"></script>
+    <script nomodule>
+        document.getElementById('app').innerHTML = 'Your browser doesn\'t support JavaScript modules :(';
+    </script>
+</body>
+</html>

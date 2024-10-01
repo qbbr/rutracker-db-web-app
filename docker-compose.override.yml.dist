@@ -1,0 +1,6 @@
+services:
+  app:
+    environment:
+      PHP_IDE_CONFIG: "serverName=rutracker-local"
+#    extra_hosts: # fix xdebug: change ip to your
+#      - "host.docker.internal:10.1.1.1"

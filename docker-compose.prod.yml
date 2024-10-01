@@ -1,0 +1,8 @@
+services:
+  app:
+    build:
+      target: prod
+    restart: unless-stopped
+
+  nginx:
+    restart: unless-stopped

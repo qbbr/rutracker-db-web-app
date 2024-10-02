@@ -5,36 +5,47 @@ const DEFAULT_PAGESIZE = 25;
 export default {
     template: `
         <div class="container">
+            <div class="d-lg-flex flex-lg-row mb-3">
+                <select class="form-select" size="10" multiple aria-label="Forum list" :disabled="isForumLoading">
+                    <template v-if="isForumLoading">
+                        <option>Loading...</option>
+                    </template>
+                    <template v-else>
+                        <option v-for="forum in forumList" :value="forum.id">{{ forum.name }}</option>
+                    </template>
+                </select>
+            </div>
+
             <div class="d-lg-flex flex-lg-row">
-                <div class="flex-fill text-center text-lg-start" :class="{ 'text-black-50': loading }">
+                <div class="flex-fill text-center text-lg-start" :class="{ 'text-black-50': isTorrentsLoading }">
                     Showing {{ page > 1 ? (page * pageSize) + 1 : 1 }} to {{ page > 1 ? (page + 1) * pageSize : page * pageSize }} of {{ total }} rows
-                    <select class="form-select w-auto d-inline-block" :disabled="loading" v-model="pageSize" @change="changePageSize">
+                    <select class="form-select w-auto d-inline-block" :disabled="isTorrentsLoading" v-model="pageSize" @change="changePageSize">
                         <option v-for="v in [25, 50, 100, 250, 500]" :value="v">{{ v }}</option>
                     </select>
                     per page
                 </div>
                 <nav v-if="lastPage > 1" class="flex-fill">
                     <ul class="pagination mb-0 justify-content-center justify-content-lg-end">
-                        <li class="page-item" :class="{ 'disabled': page < 6 || loading }">
+                        <li class="page-item" :class="{ 'disabled': page < 6 || isTorrentsLoading }">
                             <router-link :to="{ query: getParams(1) }" class="page-link"><i class="bi bi-chevron-bar-left"></i></router-link>
                         </li>
-                        <li class="page-item" :class="{ 'disabled': page === 1 || loading }">
+                        <li class="page-item" :class="{ 'disabled': page === 1 || isTorrentsLoading }">
                             <router-link :to="{ query: getParams(page - 1) }" class="page-link"><i class="bi bi-chevron-left"></i></router-link>
                         </li>
-                        <li class="page-item" v-for="p in pages" :class="{ 'active': p === page, 'disabled': loading }">
+                        <li class="page-item" v-for="p in pages" :class="{ 'active': p === page, 'disabled': isTorrentsLoading }">
                             <router-link :to="{ query: getParams(p) }" class="page-link">{{ p }}</router-link>
                         </li>
-                        <li class="page-item" :class="{ 'disabled': page === lastPage || loading }">
+                        <li class="page-item" :class="{ 'disabled': page === lastPage || isTorrentsLoading }">
                             <router-link :to="{ query: getParams(page + 1) }" class="page-link"><i class="bi bi-chevron-right"></i></router-link>
                         </li>
-                        <li class="page-item" :class="{ 'disabled': page > lastPage - 6 || loading }">
+                        <li class="page-item" :class="{ 'disabled': page > lastPage - 6 || isTorrentsLoading }">
                             <router-link :to="{ query: getParams(lastPage) }" class="page-link"><i class="bi bi-chevron-bar-right"></i></router-link>
                         </li>
                     </ul>
                 </nav>
             </div>
 
-            <div v-if="!loading" class="table-responsive mt-3">
+            <div v-if="!isTorrentsLoading" class="table-responsive mt-3">
                 <table class="table">
                     <thead>
                         <tr>
@@ -77,7 +88,9 @@ export default {
     `,
     data() {
         return {
-            loading: true,
+            isTorrentsLoading: true,
+            isForumLoading: true,
+            forumList: [],
             total: 0,
             rows: [],
             pages: [],
@@ -87,6 +100,8 @@ export default {
         }
     },
     mounted() {
+        this.getForumList();
+
         if (this.$route.query.pageSize) {
             this.pageSize = Number(this.$route.query.pageSize);
         }
@@ -94,11 +109,11 @@ export default {
         if (this.$route.query.searchQuery) {
             this.searchQuery = this.$route.query.searchQuery;
         } else {
-            this.getLatest();
+            this.getLatestTorrents();
         }
 
         this.$emitter.on('data:refresh', () => {
-            this.getLatest();
+            this.getLatestTorrents();
         });
 
         window.addEventListener('keydown', this.hotkeyListener);
@@ -112,9 +127,9 @@ export default {
         }
     },
     watch: {
-        page: 'getLatest',
-        searchQuery: 'getLatest',
-        pageSize: 'getLatest',
+        page: 'getLatestTorrents',
+        searchQuery: 'getLatestTorrents',
+        pageSize: 'getLatestTorrents',
         '$route.query.searchQuery'(to, from) {
             this.searchQuery = to || '';
         },
@@ -140,9 +155,15 @@ export default {
         changePageSize() {
             this.$router.push({ query: this.getParams(this.page) });
         },
-        getLatest() {
+        getForumList() {
+            this.$http.get('/forum/list').then(response => {
+                this.forumList = response.data;
+                this.isForumLoading = false;
+            });
+        },
+        getLatestTorrents() {
             bsTooltipHide();
-            this.loading = true;
+            this.isTorrentsLoading = true;
 
             this.$http.get('/torrent/latest', { params: this.getParams(this.page) }).then(response => {
                 const data = response.data;
@@ -156,7 +177,7 @@ export default {
                     this.$router.push({ query: this.getParams(this.lastPage) })
                 }
 
-                this.loading = false;
+                this.isTorrentsLoading = false;
             }).then(() => {
                 bsTooltipInit();
             });

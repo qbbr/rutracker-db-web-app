@@ -7,7 +7,18 @@ axios.defaults.baseURL = '/api';
 axios.interceptors.response.use(function (response) {
     return response;
 }, function (error) {
-    bsModalError(error.response.data.title, error.response.data.detail);
+    const data = error.response.data;
+    const title = data.code + ': ' + data.type;
+    let message = data.message;
+
+    if (data.trace) {
+        message += `\n\n${data.file}:${data.line}`;
+    }
+
+    bsModalError(
+        title,
+        message,
+    );
 
     return Promise.reject(error);
 });

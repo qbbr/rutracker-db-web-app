@@ -6,6 +6,7 @@ namespace App\Repository;
 
 use App\Entity\Forum;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\Order as OrderBy;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -35,5 +36,18 @@ class ForumRepository extends ServiceEntityRepository
         }
 
         return $forum;
+    }
+
+    /**
+     * @return array<int, Forum>
+     */
+    public function getAll(): array
+    {
+        $qb = $this->createQueryBuilder('e')
+            ->select('e.id, e.name')
+            ->orderBy('e.name', OrderBy::Ascending->value)
+        ;
+
+        return $qb->getQuery()->getResult();
     }
 }

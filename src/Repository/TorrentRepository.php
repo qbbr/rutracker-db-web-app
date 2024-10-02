@@ -27,8 +27,9 @@ class TorrentRepository extends ServiceEntityRepository
         int $pageSize = Config::PAGE_SIZE,
         ?string $searchQuery = null,
     ): Paginator {
-        $qb = $this->createQueryBuilder('e');
-        $qb->select('e.id, e.title, e.size, e.hash, e.registredAt');
+        $qb = $this->createQueryBuilder('e')
+            ->select('e.id, e.title, e.size, e.hash, e.registredAt')
+        ;
 
         if (null !== $searchQuery) {
             if ($searchTerms = SearchQueryHelper::extractSearchTerms($searchQuery)) {

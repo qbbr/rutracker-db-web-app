@@ -26,7 +26,6 @@ wget https://cdn.jsdelivr.net/npm/vue@3.5.10/dist/vue.global.min.js -O - | sed '
 wget https://cdn.jsdelivr.net/npm/vue-router@4.4.5/dist/vue-router.global.min.js -O - | sed '/sourceMappingURL=/d' > "${VENDOR_DIR}/vue-router.global.min.js"
 wget https://cdn.jsdelivr.net/npm/axios@1.7.7/dist/axios.min.js -O - | sed '/sourceMappingURL=/d' > "${VENDOR_DIR}/axios.min.js"
 wget https://cdn.jsdelivr.net/npm/vue-axios@3.5.2/dist/vue-axios.common.min.js -P ${VENDOR_DIR}
-wget https://cdn.jsdelivr.net/npm/mitt@3.0.1/dist/mitt.umd.js -O - | sed '/sourceMappingURL=/d' > "${VENDOR_DIR}/mitt.umd.js"
 wget https://cdn.jsdelivr.net/npm/hack-font@3.3.0/build/web/hack.min.css -O - | sed '/sourceMappingURL=/d' > "${VENDOR_DIR}/hack.min.css"
 wget https://cdn.jsdelivr.net/npm/hack-font@3.3.0/build/web/fonts/hack-regular.woff2 -P ${FONT_DIR}
 wget https://cdn.jsdelivr.net/npm/hack-font@3.3.0/build/web/fonts/hack-regular.woff -P ${FONT_DIR}

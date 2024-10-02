@@ -25,11 +25,19 @@ class TorrentRepository extends ServiceEntityRepository
     public function findLatest(
         int $page = 1,
         int $pageSize = Config::PAGE_SIZE,
+        array $forumIds = [],
         ?string $searchQuery = null,
     ): Paginator {
         $qb = $this->createQueryBuilder('e')
             ->select('e.id, e.title, e.size, e.hash, e.registredAt')
         ;
+
+        if (\count($forumIds)) {
+            $qb
+                ->andWhere('e.forum IN (:forumIds)')
+                ->setParameter('forumIds', $forumIds)
+            ;
+        }
 
         if (null !== $searchQuery) {
             if ($searchTerms = SearchQueryHelper::extractSearchTerms($searchQuery)) {

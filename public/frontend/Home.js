@@ -5,15 +5,32 @@ const DEFAULT_PAGESIZE = 25;
 export default {
     template: `
         <div class="container">
-            <div class="d-lg-flex flex-lg-row mb-3">
-                <select class="form-select" size="10" multiple aria-label="Forum list" :disabled="isForumLoading">
-                    <template v-if="isForumLoading">
-                        <option>Loading...</option>
-                    </template>
-                    <template v-else>
-                        <option v-for="forum in forumList" :value="forum.id">{{ forum.name }}</option>
-                    </template>
-                </select>
+            <div class="row mb-3">
+                <div class="col">
+                    <select class="form-select" size="10" multiple aria-label="Forum list" v-model="forumSelect" :disabled="isForumLoading">
+                        <template v-if="isForumLoading">
+                            <option>Loading...</option>
+                        </template>
+                        <template v-else>
+                            <option v-for="forum in forumList" :value="forum.id">{{ forum.name }}</option>
+                        </template>
+                    </select>
+                </div>
+                <div class="col position-relative">
+                    <div class="row">
+                        <div class="col">
+                            <div class="input-group">
+                                <input class="form-control" type="text" placeholder="Search" aria-label="Search" v-model="searchQuery" v-on:keyup.enter="search" ref="search" spellcheck="false">
+                                <button type="button" class="btn btn-outline-danger border" v-if="searchQuery.length" @click="clearSearchQuery"><i class="bi bi-x-lg"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row position-absolute bottom-0">
+                        <div class="col">
+                            <button type="button" class="btn btn-outline-primary" @click="search"><i class="bi bi-search"></i> Search</button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="d-lg-flex flex-lg-row">
@@ -96,6 +113,8 @@ export default {
             pages: [],
             lastPage: 0,
             pageSize: DEFAULT_PAGESIZE,
+            forumSelect: [],
+            forumIds: '',
             searchQuery: '',
         }
     },
@@ -108,13 +127,13 @@ export default {
 
         if (this.$route.query.searchQuery) {
             this.searchQuery = this.$route.query.searchQuery;
-        } else {
-            this.getLatestTorrents();
         }
 
-        this.$emitter.on('data:refresh', () => {
-            this.getLatestTorrents();
-        });
+        if (this.$route.query.forumIds) {
+            this.forumIds = this.$route.query.forumIds;
+        }
+
+        this.getLatestTorrents();
 
         window.addEventListener('keydown', this.hotkeyListener);
     },
@@ -128,16 +147,40 @@ export default {
     },
     watch: {
         page: 'getLatestTorrents',
-        searchQuery: 'getLatestTorrents',
+        // searchQuery: 'getLatestTorrents',
         pageSize: 'getLatestTorrents',
         '$route.query.searchQuery'(to, from) {
             this.searchQuery = to || '';
         },
         '$route.query.pageSize'(to, from) {
             this.pageSize = to || DEFAULT_PAGESIZE;
-        }
+        },
+        '$route.query.forumIds'(to, from) {
+            this.forumIds = to || '';
+        },
     },
     methods: {
+        search() {
+            const params = {};
+            if (this.searchQuery.length) {
+                params.searchQuery = this.searchQuery;
+            }
+            if (this.forumSelect.length) {
+                let forumIds = [];
+
+                for (const value of this.forumSelect) {
+                    forumIds.push(value);
+                }
+
+                params.forumIds = this.forumIds = forumIds.join(',');
+            }
+            this.$router.push({ name: 'Home', query: params });
+            this.getLatestTorrents();
+        },
+        clearSearchQuery() {
+            this.searchQuery = '';
+            this.search();
+        },
         getParams(page) {
             const params = {};
             if (page > 1) {
@@ -148,6 +191,9 @@ export default {
             }
             if (this.pageSize > 0 && this.pageSize !== DEFAULT_PAGESIZE) {
                 params.pageSize = this.pageSize;
+            }
+            if (this.forumIds.length) {
+                params.forumIds = this.forumIds;
             }
 
             return params;
@@ -188,7 +234,7 @@ export default {
             }
             if ('/' === event.key || 's' === event.key) { // focus search
                 event.preventDefault();
-                this.$emitter.emit('search:focus');
+                this.$refs.search.focus();
             } else if (event.ctrlKey) { // page navigation
                 let page = null;
                 if (event.key === 'ArrowLeft' && this.page > 1) { // prev

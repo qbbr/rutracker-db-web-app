@@ -23,10 +23,7 @@ axios.interceptors.response.use(function (response) {
     return Promise.reject(error);
 });
 
-const emitter = mitt();
 const app = createApp(App);
-
-app.config.globalProperties.$emitter = emitter;
 
 app.config.globalProperties.$filters = {
     toLocaleString(dateStr) {

@@ -3,7 +3,7 @@ networks:
 
 services:
   app:
-    container_name: rsyslog-app
+    container_name: rutracker-app
     build:
       context: .
       dockerfile: Dockerfile
@@ -15,7 +15,7 @@ services:
       - nw
 
   nginx:
-    container_name: rsyslog-nginx
+    container_name: rutracker-nginx
     build:
       context: .
       dockerfile: Dockerfile

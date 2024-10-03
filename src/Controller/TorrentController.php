@@ -27,9 +27,9 @@ class TorrentController extends AbstractController
     ): JsonResponse {
         $page = $request->query->getInt('page', 1);
         $pageSize = $request->query->getInt('pageSize', Config::PAGE_SIZE);
-        if ($forumIds = $request->query->getString('forumIds')) {
-            $forumIds = explode(',', $forumIds);
-        }
+        $forumIds = $request->query->has('forumIds')
+            ? explode(',', $request->query->getString('forumIds'))
+            : [];
         $searchQuery = $request->query->get('searchQuery');
 
         $paginator = $this->torrentRepository->findLatest($page, $pageSize, $forumIds, $searchQuery);

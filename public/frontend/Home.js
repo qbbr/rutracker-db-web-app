@@ -7,7 +7,7 @@ export default {
         <div class="container">
             <div class="row mb-3">
                 <div class="col">
-                    <select class="form-select" size="10" multiple aria-label="Forum list" v-model="forumSelect" :disabled="isForumLoading">
+                    <select class="form-select" size="10" multiple aria-label="Forum list" v-model="forumIds" :disabled="isForumLoading">
                         <template v-if="isForumLoading">
                             <option>Loading...</option>
                         </template>
@@ -113,9 +113,8 @@ export default {
             pages: [],
             lastPage: 0,
             pageSize: DEFAULT_PAGESIZE,
-            forumSelect: [],
-            forumIds: '',
             searchQuery: '',
+            forumIds: [],
         }
     },
     mounted() {
@@ -130,7 +129,7 @@ export default {
         }
 
         if (this.$route.query.forumIds) {
-            this.forumIds = this.$route.query.forumIds;
+            this.forumIds = this.$route.query.forumIds.split(',');
         }
 
         this.getLatestTorrents();
@@ -149,15 +148,6 @@ export default {
         page: 'getLatestTorrents',
         // searchQuery: 'getLatestTorrents',
         pageSize: 'getLatestTorrents',
-        '$route.query.searchQuery'(to, from) {
-            this.searchQuery = to || '';
-        },
-        '$route.query.pageSize'(to, from) {
-            this.pageSize = to || DEFAULT_PAGESIZE;
-        },
-        '$route.query.forumIds'(to, from) {
-            this.forumIds = to || '';
-        },
     },
     methods: {
         search() {
@@ -165,14 +155,8 @@ export default {
             if (this.searchQuery.length) {
                 params.searchQuery = this.searchQuery;
             }
-            if (this.forumSelect.length) {
-                let forumIds = [];
-
-                for (const value of this.forumSelect) {
-                    forumIds.push(value);
-                }
-
-                params.forumIds = this.forumIds = forumIds.join(',');
+            if (this.forumIds.length) {
+                params.forumIds = this.forumIds.toString();
             }
             this.$router.push({ name: 'Home', query: params });
             this.getLatestTorrents();
@@ -193,7 +177,7 @@ export default {
                 params.pageSize = this.pageSize;
             }
             if (this.forumIds.length) {
-                params.forumIds = this.forumIds;
+                params.forumIds = this.forumIds.toString();
             }
 
             return params;

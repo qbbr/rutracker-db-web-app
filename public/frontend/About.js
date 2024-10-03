@@ -14,6 +14,7 @@ export default {
                     <span class="visually-hidden">Loading...</span>
                 </div>
             </h3>
+
             <p>
                 Vue.js: {{ info.vue.ver }}<br>
                 OS: {{ info.os }}<br>
@@ -23,6 +24,16 @@ export default {
                 Torrent count: {{ info.count.torrent }}<br>
                 Forum count: {{ info.count.forum }}
             </p>
+
+            <h3>Hotkeys</h3>
+
+            <ul>
+                <li><kbd>/</kbd>, <kbd>s</kbd> - focus the search bar</li>
+                <li><kbd>Ctrl + ArrowRight</kbd> - goto the next page</li>
+                <li><kbd>Ctrl + ArrowLeft</kbd> - goto the previous page</li>
+                <li><kbd>Ctrl + Shift + ArrowRight</kbd> - goto the last page</li>
+                <li><kbd>Ctrl + Shift + ArrowLeft</kbd> - goto the first page</li>
+            </ul>
 
             <hr>
 

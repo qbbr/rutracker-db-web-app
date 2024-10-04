@@ -7,7 +7,8 @@ export default {
         <div class="container">
             <div class="row mb-3">
                 <div class="col">
-                    <select class="form-select" size="10" multiple aria-label="Forum list" v-model="forumIds" :disabled="isForumLoading">
+                    <input class="form-control" type="text" placeholder="Forum filter" aria-label="Forum filter" v-model="forumFilter" :disabled="isForumLoading" spellcheck="false">
+                    <select class="form-select" size="10" multiple aria-label="Forum list" v-model="forumIds" :disabled="isForumLoading" ref="forumSelect">
                         <template v-if="isForumLoading">
                             <option>Loading...</option>
                         </template>
@@ -115,6 +116,7 @@ export default {
             pageSize: DEFAULT_PAGESIZE,
             searchQuery: '',
             forumIds: [],
+            forumFilter: '',
         }
     },
     mounted() {
@@ -148,6 +150,7 @@ export default {
         page: 'getLatestTorrents',
         // searchQuery: 'getLatestTorrents',
         pageSize: 'getLatestTorrents',
+        forumFilter: 'filterForum'
     },
     methods: {
         search() {
@@ -164,6 +167,15 @@ export default {
         clearSearchQuery() {
             this.searchQuery = '';
             this.search();
+        },
+        filterForum() {
+            for (const option of this.$refs.forumSelect.children) {
+                if (option.innerText.toLowerCase().includes(this.forumFilter.toLowerCase())) {
+                    option.removeAttribute('hidden');
+                } else {
+                    option.setAttribute('hidden', true);
+                }
+            }
         },
         getParams(page) {
             const params = {};

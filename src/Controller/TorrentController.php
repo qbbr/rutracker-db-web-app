@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Config;
+use App\Document\Torrent;
 use App\Pagination\PaginationDataCollector;
 use App\Repository\TorrentRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -32,8 +33,17 @@ class TorrentController extends AbstractController
             : [];
         $searchQuery = $request->query->get('searchQuery');
 
-        $paginator = $this->torrentRepository->findLatest($page, $pageSize, $forumIds, $searchQuery);
-        $data = $this->paginationDataCollector->getData($paginator);
+        $paginator = $this->torrentRepository->findLatest(
+            page: $page,
+            pageSize: $pageSize,
+            forumIds: $forumIds,
+            searchQuery: $searchQuery,
+        );
+
+        $data = $this->paginationDataCollector->getData(
+            paginator: $paginator,
+            groups: Torrent::GROUPS_LIST,
+        );
 
         return new JsonResponse($data);
     }

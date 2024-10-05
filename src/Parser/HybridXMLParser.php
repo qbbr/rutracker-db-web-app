@@ -43,21 +43,6 @@ class HybridXMLParser
         return $this;
     }
 
-    protected function getCurrentPath(): string
-    {
-        return '/'.implode('/', $this->paths);
-    }
-
-    protected function notifyListener(
-        string $path,
-    ): void {
-        if (isset($this->pathListeners[$path])) {
-            $node = new Crawler();
-            $node->addXmlContent($this->xml->readOuterXml(), $this->encoding);
-            $this->pathListeners[$path]($node);
-        }
-    }
-
     /**
      * @param string $uri     URI pointing to the document
      * @param int    $options A bitmask of the LIBXML_* constants
@@ -92,5 +77,20 @@ class HybridXMLParser
         $this->xml->close();
 
         return $this;
+    }
+
+    private function getCurrentPath(): string
+    {
+        return '/'.implode('/', $this->paths);
+    }
+
+    private function notifyListener(
+        string $path,
+    ): void {
+        if (isset($this->pathListeners[$path])) {
+            $node = new Crawler();
+            $node->addXmlContent($this->xml->readOuterXml(), $this->encoding);
+            $this->pathListeners[$path]($node, $this);
+        }
     }
 }

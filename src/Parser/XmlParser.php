@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Parser;
 
-use App\Entity\Torrent;
+use App\Document\Torrent;
 use App\Helper\DateTimeHelper;
 use App\Repository\ForumRepository;
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\DomCrawler\Crawler;
 
@@ -18,7 +18,7 @@ class XmlParser
     private const int BATCH_SIZE = 1000;
 
     public function __construct(
-        private readonly EntityManagerInterface $em,
+        private readonly DocumentManager $dm,
         private readonly ForumRepository $forumRepository,
     ) {
     }
@@ -29,23 +29,22 @@ class XmlParser
     ): void {
         $i = 0;
 
-        (new HybridXMLParser())
-            ->bind('/torrents/torrent', function (Crawler $node) use (&$i, $progressBar) {
-                $this->parseTorrent($node);
+        $parser = new HybridXMLParser();
 
-                if (0 === $i % self::BATCH_SIZE) {
-                    $this->em->flush();
-                    $this->em->clear();
-                }
+        $parser->bind('/torrents/torrent', function (Crawler $node) use (&$i, $progressBar) {
+            $this->parseTorrent($node);
 
-                $progressBar->advance();
-                ++$i;
-            })
-            ->process($filePath)
-        ;
+            if (0 === $i % self::BATCH_SIZE) {
+                $this->dm->flush();
+                $this->dm->clear();
+            }
 
-        $this->em->flush();
-        $this->em->clear();
+            $progressBar->advance();
+            ++$i;
+        })->process($filePath);
+
+        $this->dm->flush();
+        $this->dm->clear();
     }
 
     private function parseTorrent(
@@ -77,6 +76,6 @@ class XmlParser
             forum: $forum,
         );
 
-        $this->em->persist($torrent);
+        $this->dm->persist($torrent);
     }
 }

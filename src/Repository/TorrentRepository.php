@@ -5,20 +5,20 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Config;
-use App\Entity\Torrent;
-use App\Helper\SearchQueryHelper;
+use App\Document\Torrent;
 use App\Pagination\Paginator;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
+use Doctrine\Bundle\MongoDBBundle\Repository\ServiceDocumentRepository;
 use Doctrine\Common\Collections\Order as OrderBy;
-use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Torrent>
+ * @extends ServiceDocumentRepository<Torrent>
  */
-class TorrentRepository extends ServiceEntityRepository
+class TorrentRepository extends ServiceDocumentRepository
 {
-    public function __construct(ManagerRegistry $registry)
-    {
+    public function __construct(
+        ManagerRegistry $registry,
+    ) {
         parent::__construct($registry, Torrent::class);
     }
 
@@ -28,32 +28,19 @@ class TorrentRepository extends ServiceEntityRepository
         array $forumIds = [],
         ?string $searchQuery = null,
     ): Paginator {
-        $qb = $this->createQueryBuilder('e')
-            ->select('e.id, e.title, e.size, e.hash, e.registredAt')
+        $qb = $this->createQueryBuilder()
+            ->select('id', 'title', 'size', 'hash', 'registredAt')
         ;
 
         if (\count($forumIds)) {
-            $qb
-                ->andWhere('e.forum IN (:forumIds)')
-                ->setParameter('forumIds', $forumIds)
-            ;
+            $qb->field('forum')->in($forumIds);
         }
 
         if (null !== $searchQuery) {
-            if ($searchTerms = SearchQueryHelper::extractSearchTerms($searchQuery)) {
-                $orStatements = $qb->expr()->orX();
-
-                foreach ($searchTerms as $term) {
-                    $orStatements->add(
-                        $qb->expr()->like('lower(e.title)', $qb->expr()->literal('%'.mb_strtolower($term).'%'))
-                    );
-                }
-
-                $qb->andWhere($orStatements);
-            }
+            $qb->text($searchQuery);
         }
 
-        $qb->addOrderBy('e.id', OrderBy::Descending->value);
+        $qb->sort('id', OrderBy::Descending->value);
 
         return (new Paginator($qb, $pageSize))->paginate($page);
     }

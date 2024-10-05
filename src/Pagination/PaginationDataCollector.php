@@ -4,25 +4,21 @@ declare(strict_types=1);
 
 namespace App\Pagination;
 
-use App\Config;
-use Symfony\Component\Serializer\Context\Normalizer\DateTimeNormalizerContextBuilder;
-use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+use App\Normalizer\ObjectNormalizer;
 
 readonly class PaginationDataCollector
 {
     public function __construct(
-        private NormalizerInterface $normalizer,
+        private ObjectNormalizer $objectNormalizer,
     ) {
     }
 
-    public function getData(Paginator $paginator): array
-    {
-        $contextBuilder = (new DateTimeNormalizerContextBuilder())
-            ->withFormat(Config::DATE_TIME_FORMAT)
-        ;
-
+    public function getData(
+        Paginator $paginator,
+        array $groups = [],
+    ): array {
         return [
-            'results' => $this->normalizer->normalize($paginator->getResults(), context: $contextBuilder->toArray()),
+            'results' => $this->objectNormalizer->normalize(objects: $paginator->getResults(), groups: $groups),
             'page' => $paginator->getCurrentPage(),
             'pageSize' => $paginator->getPageSize(),
             'lastPage' => $paginator->getLastPage(),

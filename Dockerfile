@@ -7,15 +7,21 @@ ARG HOME="/var/www"
 ARG USER
 ARG UID
 
-RUN apk add \
+RUN apk update \
+    && apk add --no-cache \
     bash \
     wget \
     unzip \
+    openssl-dev \
+    linux-headers \
     $PHPIZE_DEPS
 
-RUN pecl install apcu \
-    docker-php-ext-enable apcu \
-    docker-php-source delete
+RUN pecl install apcu mongodb \
+    && docker-php-ext-enable apcu mongodb
+
+#ARG CUSTOM_INI="/usr/local/etc/php/conf.d/ext-custom.ini"
+#RUN echo 'extension=apcu' >> $CUSTOM_INI \
+#    && echo 'extension=mongodb' >> $CUSTOM_INI
 
 RUN wget https://getcomposer.org/download/latest-stable/composer.phar -O /usr/local/bin/composer \
     && chmod +x /usr/local/bin/composer
@@ -40,7 +46,10 @@ RUN apk add \
     && docker-php-ext-enable xdebug \
     && echo 'xdebug.mode=debug' >> $XDEBUG_INI \
     && echo 'xdebug.client_host=host.docker.internal' >> $XDEBUG_INI \
-    && docker-php-source delete
+    && docker-php-source delete \
+    docker-php-source delete \
+    && apk del \
+    ${PHPIZE_DEPS}
 
 USER $USER:$USER
 
@@ -56,6 +65,12 @@ ENV APP_ENV=prod
 USER root:root
 
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+
+RUN docker-php-source delete \
+    docker-php-source delete \
+    && apk del \
+    ${PHPIZE_DEPS}
+
 
 USER $USER:$USER
 

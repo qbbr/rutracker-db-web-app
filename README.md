@@ -6,6 +6,7 @@
 
  * [PHP 8.3](https://www.php.net/)
  * [Symfony 7.1](https://symfony.com/)
+ * [MongoDB](https://www.mongodb.com/)
  * [Vue.js 3](https://vuejs.org/)
  * [Bootstrap 5.3](https://getbootstrap.com/)
  * under [Docker](https://www.docker.com/)

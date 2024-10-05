@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
-use App\Entity\Forum;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use App\Document\Forum;
+use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
+use Doctrine\Bundle\MongoDBBundle\Repository\ServiceDocumentRepository;
 use Doctrine\Common\Collections\Order as OrderBy;
-use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Forum>
+ * @extends ServiceDocumentRepository<Forum>
  */
-class ForumRepository extends ServiceEntityRepository
+class ForumRepository extends ServiceDocumentRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -31,8 +31,7 @@ class ForumRepository extends ServiceEntityRepository
                 name: $name,
             );
 
-            $this->getEntityManager()->persist($forum);
-            $this->getEntityManager()->flush();
+            $this->getDocumentManager()->persist($forum);
         }
 
         return $forum;
@@ -43,11 +42,13 @@ class ForumRepository extends ServiceEntityRepository
      */
     public function getAll(): array
     {
-        $qb = $this->createQueryBuilder('e')
-            ->select('e.id, e.name')
-            ->orderBy('e.name', OrderBy::Ascending->value)
-        ;
+        $qb = $this->createQueryBuilder()
+            ->select('id', 'name')
+            ->sort('name', OrderBy::Ascending->value);
 
-        return $qb->getQuery()->getResult();
+        return $qb
+            ->getQuery()
+            ->execute()
+            ->toArray();
     }
 }

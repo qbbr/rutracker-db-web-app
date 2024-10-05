@@ -4,6 +4,7 @@
 /.composer
 /.wget-hsts
 /docker-compose.override.yml
+/docker/mongo/
 
 ###> symfony/framework-bundle ###
 /.env.local

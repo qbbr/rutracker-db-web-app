@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Pagination;
 
 use App\Config;
-use Doctrine\ORM\QueryBuilder;
+use Doctrine\ODM\MongoDB\Query\Builder;
 
 class Paginator
 {
@@ -14,7 +14,7 @@ class Paginator
     private array $results;
 
     public function __construct(
-        private readonly QueryBuilder $qb,
+        private readonly Builder $qb,
         private readonly int $pageSize = Config::PAGE_SIZE,
     ) {
     }
@@ -26,16 +26,17 @@ class Paginator
         $firstResult = ($this->currentPage - 1) * $this->pageSize;
 
         $this->total = (clone $this->qb)
-            ->select('count(e.id)')
+            ->count()
             ->getQuery()
-            ->getSingleScalarResult()
+            ->execute()
         ;
 
         $this->results = (clone $this->qb)
-            ->setFirstResult($firstResult)
-            ->setMaxResults($this->pageSize)
+            ->skip($firstResult)
+            ->limit($this->pageSize)
             ->getQuery()
-            ->getResult()
+            ->execute()
+            ->toArray()
         ;
 
         return $this;
@@ -64,25 +65,5 @@ class Paginator
     public function getResults(): array
     {
         return $this->results;
-    }
-
-    /**
-     * @return array{
-     *     results: array<int, mixed>,
-     *     page: int,
-     *     pageSize: int,
-     *     lastPage: int,
-     *     total: int,
-     * }
-     */
-    public function getAsArray(): array
-    {
-        return [
-            'results' => $this->getResults(),
-            'page' => $this->getCurrentPage(),
-            'pageSize' => $this->getPageSize(),
-            'lastPage' => $this->getLastPage(),
-            'total' => $this->getTotal(),
-        ];
     }
 }

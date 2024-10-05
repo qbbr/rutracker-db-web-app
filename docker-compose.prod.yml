@@ -6,3 +6,6 @@ services:
 
   nginx:
     restart: unless-stopped
+
+  mongo:
+    restart: unless-stopped

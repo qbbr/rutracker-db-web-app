@@ -43,3 +43,7 @@ export function calculatePages(page, lastPage) {
 
     return pages;
 }
+
+export function magnetUrl(hash, title) {
+    return 'magnet:?xt=urn:btih:' + hash + '&tr=http://bt.t-ru.org/ann?magnet' + '&dn=' + title;
+}

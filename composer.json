@@ -2,7 +2,7 @@
     "name": "qbbr/rutracker-web-app",
     "description": "Web Application for RuTracker on Symfony + Vue.js",
     "type": "project",
-    "keywords": ["php", "symfony", "vuejs", "bootstrap", "docker", "rutracker", "qbbr"],
+    "keywords": ["php", "symfony", "vuejs", "bootstrap", "docker", "mongodb", "rutracker", "qbbr"],
     "license": "MIT",
     "minimum-stability": "stable",
     "prefer-stable": true,

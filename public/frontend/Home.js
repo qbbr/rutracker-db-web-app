@@ -7,15 +7,7 @@ export default {
         <div class="container">
             <div class="row mb-3">
                 <div class="col">
-                    <input class="form-control" type="text" placeholder="Forum filter" aria-label="Forum filter" v-model="forumFilter" :disabled="isForumLoading" spellcheck="false">
-                    <select class="form-select" size="10" multiple aria-label="Forum list" v-model="forumIds" :disabled="isForumLoading" ref="forumSelect">
-                        <template v-if="isForumLoading">
-                            <option>Loading...</option>
-                        </template>
-                        <template v-else>
-                            <option v-for="forum in forumList" :value="forum.id">{{ forum.name }}</option>
-                        </template>
-                    </select>
+                    <forum-list></forum-list>
                 </div>
                 <div class="col position-relative">
                     <div class="row">
@@ -107,31 +99,21 @@ export default {
     data() {
         return {
             isTorrentsLoading: true,
-            isForumLoading: true,
-            forumList: [],
             total: 0,
             rows: [],
             pages: [],
             lastPage: 0,
             pageSize: DEFAULT_PAGESIZE,
             searchQuery: '',
-            forumIds: [],
-            forumFilter: '',
         }
     },
     mounted() {
-        this.getForumList();
-
         if (this.$route.query.pageSize) {
             this.pageSize = Number(this.$route.query.pageSize);
         }
 
         if (this.$route.query.searchQuery) {
             this.searchQuery = this.$route.query.searchQuery;
-        }
-
-        if (this.$route.query.forumIds) {
-            this.forumIds = this.$route.query.forumIds.split(',');
         }
 
         this.getLatestTorrents();
@@ -150,7 +132,6 @@ export default {
         page: 'getLatestTorrents',
         // searchQuery: 'getLatestTorrents',
         pageSize: 'getLatestTorrents',
-        forumFilter: 'filterForum'
     },
     methods: {
         search() {
@@ -158,24 +139,15 @@ export default {
             if (this.searchQuery.length) {
                 params.searchQuery = this.searchQuery;
             }
-            if (this.forumIds.length) {
-                params.forumIds = this.forumIds.toString();
+            if (this.$route.query.forumIds) {
+                params.forumIds = this.$route.query.forumIds.toString();
             }
-            this.$router.push({ name: 'Home', query: params });
+            this.$router.push({ path: this.$route.path, query: params });
             this.getLatestTorrents();
         },
         clearSearchQuery() {
             this.searchQuery = '';
             this.search();
-        },
-        filterForum() {
-            for (const option of this.$refs.forumSelect.children) {
-                if (option.innerText.toLowerCase().includes(this.forumFilter.toLowerCase())) {
-                    option.removeAttribute('hidden');
-                } else {
-                    option.setAttribute('hidden', true);
-                }
-            }
         },
         getParams(page) {
             const params = {};
@@ -188,20 +160,14 @@ export default {
             if (this.pageSize > 0 && this.pageSize !== DEFAULT_PAGESIZE) {
                 params.pageSize = this.pageSize;
             }
-            if (this.forumIds.length) {
-                params.forumIds = this.forumIds.toString();
+            if (this.$route.query.forumIds) {
+                params.forumIds = this.$route.query.forumIds.toString();
             }
 
             return params;
         },
         changePageSize() {
             this.$router.push({ query: this.getParams(this.page) });
-        },
-        getForumList() {
-            this.$http.get('/forum/list').then(response => {
-                this.forumList = response.data;
-                this.isForumLoading = false;
-            });
         },
         getLatestTorrents() {
             bsTooltipHide();

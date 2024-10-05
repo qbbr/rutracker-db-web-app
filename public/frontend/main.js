@@ -1,7 +1,8 @@
 import App from './App.js';
 const { createApp } = Vue;
 import router from './router.js';
-import { bsModalError } from './helper.js';
+import { bsModalError, magnetUrl } from './helper.js';
+import ForumList from './components/forum-list.js';
 
 axios.defaults.baseURL = '/api';
 axios.interceptors.response.use(function (response) {
@@ -25,15 +26,16 @@ axios.interceptors.response.use(function (response) {
 
 const app = createApp(App);
 
+app.component('forum-list', ForumList);
+
 app.config.globalProperties.$filters = {
     toLocaleString(dateStr) {
         return new Date(dateStr).toLocaleString(navigator.language);
     },
     magnetUrl(hash, title) {
-        return 'magnet:?xt=urn:btih:' + hash + '&tr=http://bt.t-ru.org/ann?magnet' + '&dn=' + title;
+        return magnetUrl(hash, title);
     }
 };
-
 
 app.use(router)
     .use(VueAxios, axios)

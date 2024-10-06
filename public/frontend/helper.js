@@ -1,19 +1,3 @@
-export function bsTooltipInit() {
-    [].slice
-        .call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-        .map(function(el) {
-            new bootstrap.Tooltip(el);
-        });
-}
-
-export function bsTooltipHide() {
-    [].slice
-        .call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-        .map(function(el) {
-            bootstrap.Tooltip.getInstance(el)?.dispose();
-        });
-}
-
 export function bsModalError(title, body) {
     document.getElementById('errorModalTitle').innerText = title;
     document.getElementById('errorModalBody').innerText = body;

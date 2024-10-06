@@ -3,6 +3,7 @@ const { createApp } = Vue;
 import router from './router.js';
 import { bsModalError, magnetUrl } from './helper.js';
 import ForumList from './components/forum-list.js';
+import TorrentPaginatedTable from './components/torrent-paginated-table.js';
 
 axios.defaults.baseURL = '/api';
 axios.interceptors.response.use(function (response) {
@@ -24,9 +25,15 @@ axios.interceptors.response.use(function (response) {
     return Promise.reject(error);
 });
 
+const emitter = mitt();
 const app = createApp(App);
 
-app.component('forum-list', ForumList);
+app
+    .component('forum-list', ForumList)
+    .component('torrent-paginated-table', TorrentPaginatedTable)
+;
+
+app.config.globalProperties.$emitter = emitter;
 
 app.config.globalProperties.$filters = {
     toLocaleString(dateStr) {

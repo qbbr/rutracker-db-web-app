@@ -41,6 +41,7 @@ class Torrent
     #[MongoDB\Field(type: Type::DATE_IMMUTABLE)]
     private \DateTimeImmutable $registredAt;
 
+    #[MongoDB\Index]
     #[MongoDB\ReferenceOne(storeAs: 'id', targetDocument: Forum::class)]
     private Forum $forum;
 

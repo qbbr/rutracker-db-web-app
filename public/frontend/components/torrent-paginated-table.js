@@ -38,7 +38,6 @@ export default {
             <table class="table">
                 <thead>
                     <tr>
-                        <th scope="col">ID</th>
                         <th scope="col">Title</th>
                         <th scope="col">Size</th>
                         <th scope="col">Registered</th>
@@ -47,11 +46,8 @@ export default {
                 </thead>
                 <tbody class="table-group-divider">
                     <tr v-for="row in rows">
-                        <th scope="row">
-                            {{ row.id }}
-                        </th>
-                        <td>
-                            {{ row.title }}
+                        <td scope="row">
+                            <router-link :to="{ name: 'Torrent', params: { id: row.id } }">{{ row.title }}</router-link>
                         </td>
                         <td>
                             {{ row.size }}

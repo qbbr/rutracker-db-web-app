@@ -17,13 +17,13 @@ readonly class ObjectNormalizer
     }
 
     /**
-     * @param array<int, object> $objects
-     * @param array<int, string> $groups
+     * @param array<int, object>|object $objects
+     * @param array<int, string>        $groups
      *
      * @return array<int, array<string, mixed>>
      */
     public function normalize(
-        array $objects,
+        array|object $objects,
         array $groups = [],
     ): array {
         $contextBuilder = (new ObjectNormalizerContextBuilder())

@@ -1,7 +1,7 @@
 const { createRouter, createWebHashHistory } = VueRouter;
-import Home from './Home.js';
-import Torrent from './Torrent.js';
-import About from './About.js';
+import Home from './views/Home.js';
+import Torrent from './views/Torrent.js';
+import About from './views/About.js';
 
 export default createRouter({
     history: createWebHashHistory(),

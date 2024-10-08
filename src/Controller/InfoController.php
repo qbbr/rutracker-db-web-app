@@ -19,8 +19,8 @@ class InfoController extends AbstractController
     public function __construct(
         private readonly DbHelper $dbHelper,
         private readonly ParameterBagInterface $parameterBag,
-        // private readonly TorrentRepository $torrentRepository,
-        // private readonly ForumRepository $forumRepository,
+        private readonly TorrentRepository $torrentRepository,
+        private readonly ForumRepository $forumRepository,
     ) {
     }
 
@@ -41,8 +41,8 @@ class InfoController extends AbstractController
                 'size' => $this->dbHelper->getSize(),
             ],
             'count' => [
-                // 'torrent' => $this->torrentRepository->count(),
-                // 'forum' => $this->forumRepository->count(),
+                'torrent' => $this->torrentRepository->count(),
+                'forum' => $this->forumRepository->count(),
             ],
         ]);
     }

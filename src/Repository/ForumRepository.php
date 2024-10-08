@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Document\Forum;
+use App\Helper\SearchQueryHelper;
+use App\Trait\RepositoryCountTrait;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use Doctrine\Bundle\MongoDBBundle\Repository\ServiceDocumentRepository;
 use Doctrine\Common\Collections\Order as OrderBy;
@@ -14,8 +16,11 @@ use Doctrine\Common\Collections\Order as OrderBy;
  */
 class ForumRepository extends ServiceDocumentRepository
 {
-    public function __construct(ManagerRegistry $registry)
-    {
+    use RepositoryCountTrait;
+
+    public function __construct(
+        ManagerRegistry $registry,
+    ) {
         parent::__construct($registry, Forum::class);
     }
 
@@ -40,11 +45,16 @@ class ForumRepository extends ServiceDocumentRepository
     /**
      * @return array<int, Forum>
      */
-    public function getAll(): array
-    {
+    public function getAll(
+        ?string $searchQuery = null,
+    ): array {
         $qb = $this->createQueryBuilder()
             ->select('id', 'name')
             ->sort('name', OrderBy::Ascending->value);
+
+        if ($searchQuery = SearchQueryHelper::normalize($searchQuery)) {
+            $qb->text($searchQuery);
+        }
 
         return $qb
             ->getQuery()

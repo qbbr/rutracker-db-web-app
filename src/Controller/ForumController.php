@@ -9,6 +9,7 @@ use App\Normalizer\ObjectNormalizer;
 use App\Repository\ForumRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/api/forum')]
@@ -21,10 +22,15 @@ class ForumController extends AbstractController
     }
 
     #[Route('/list')]
-    public function list(): JsonResponse
-    {
-        $forums = $this->forumRepository->getAll();
-        $forums = $this->objectNormalizer->normalize($forums, Forum::GROUPS_LIST);
+    public function list(
+        Request $request,
+    ): JsonResponse {
+        $searchQuery = $request->query->get('searchQuery');
+        $forums = $this->forumRepository->getAll(searchQuery: $searchQuery);
+        $forums = $this->objectNormalizer->normalize(
+            objects: $forums,
+            groups: Forum::GROUPS_LIST,
+        );
 
         return new JsonResponse($forums);
     }

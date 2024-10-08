@@ -18,7 +18,10 @@ readonly class PaginationDataCollector
         array $groups = [],
     ): array {
         return [
-            'results' => $this->objectNormalizer->normalize(objects: $paginator->getResults(), groups: $groups),
+            'results' => $this->objectNormalizer->normalize(
+                objects: $paginator->getResults(),
+                groups: $groups,
+            ),
             'page' => $paginator->getCurrentPage(),
             'pageSize' => $paginator->getPageSize(),
             'lastPage' => $paginator->getLastPage(),

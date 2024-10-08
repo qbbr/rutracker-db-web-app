@@ -3,7 +3,7 @@ export default {
         <div class="input-group">
             <input class="form-control" type="text" placeholder="Forum search" aria-label="Forum filter" v-model="searchQuery" v-on:keyup.enter="search" :disabled="isLoading" spellcheck="false">
             <button type="button" class="btn btn-outline-danger border" v-if="searchQuery.length" @click="clearSearchQuery"><i class="bi bi-x-lg"></i></button>
-            <button type="button" class="btn btn-outline-light" @click="search"><i class="bi bi-search"></i></button>
+            <button type="button" class="btn btn-outline-secondary" @click="search"><i class="bi bi-search"></i></button>
         </div>
         <select class="form-select" size="10" multiple aria-label="Forum list" v-model="forumIds" :disabled="isLoading">
             <template v-if="isLoading">

@@ -2,10 +2,10 @@ services:
   app:
     build:
       target: prod
-    restart: unless-stopped
+    restart: always
 
   nginx:
-    restart: unless-stopped
+    restart: always
 
   mongo:
-    restart: unless-stopped
+    restart: always
